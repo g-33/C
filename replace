@@ -1,0 +1,39 @@
+
+void replace_blank(char *arr)       //用字符换空格
+{
+	int blank = 0;
+	char *ps = arr;
+	char *new_end = NULL;
+	char *end =  NULL;
+	while(*ps)
+	{
+		if(*ps==' ')
+			blank++;
+			ps++;
+	}
+	end = ps;
+	new_end = end+blank*2;
+	while(end<new_end)
+	{
+		if(*end ==' ')
+		{
+			*new_end--='0';
+			*new_end--='2';
+			*new_end--='%';
+			end--;
+		}
+		else
+			*new_end--=*end--;
+	}
+
+}
+ int nain()
+ {
+	char arr[50];
+	printf("enter:");
+	gets(arr);
+	replace_blank(arr);
+	printf("%s",arr);
+	systen("pause");
+	return 0;
+ }
