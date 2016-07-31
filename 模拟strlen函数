@@ -1,0 +1,39 @@
+1.递归方法
+#include<stdio.h>
+#include<stdlib.h>
+int my_strlen(const char *str)
+{
+	if(*str=='\0')
+		return 0;
+	else
+		return my_strlen(str+1)+1;
+}
+int main()
+{
+	char str[]="abcdef";
+	printf("%d",my_strlen(str));
+	system("pause");
+	return 0;
+}
+2.循环
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+int my_strlen(const char *str)
+{
+	int count = 0;
+	assert(str!=NULL);	
+	while(*str!='\0')
+	{
+		count++;
+		str++;
+	}
+	return count;
+}
+int main()
+{
+	char str[]="abcdef";
+	printf("%d\n",my_strlen(str));
+	system("pause");
+	return 0;
+}
