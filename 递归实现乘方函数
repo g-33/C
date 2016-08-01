@@ -1,0 +1,44 @@
+编写一个函数实现n^k，使用递归实现
+#include<stdio.h>
+#include<stdlib.h>
+int my_pow(int num,int k)
+{
+	if(k==0)
+		return 1;
+	if(k==1)
+		return num;
+	else
+		return num * my_pow(num,k-1);
+	
+}
+int main()
+{
+	int num = 0;
+	int k = 0;
+	printf("enter the number of n and k:");
+	scanf("%d%d\n",&num,&k);
+	printf("%d\n",my_pow(num,k));
+	system("pause");
+	return 0;
+}
+输出一个非负整数的各个位数之和
+#include<stdio.h>
+#include<stdlib.h>
+int DigitSum(int num)
+{
+	int m = 0;
+	int sum = 0;
+	if(num>0)
+	{
+		m=num%10;
+		sum=m+DigitSum(num/10);	
+	}
+	return sum;
+}
+int main()
+
+	int num = 1729;
+    printf("%d\n",	DigitSum(num));
+   	system("pause");
+	return 0;
+}
