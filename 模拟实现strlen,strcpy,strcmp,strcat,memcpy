@@ -1,0 +1,264 @@
+1.模拟实现strlen函数
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+int my_strlen(const char *str)//循环
+{
+	int count  = 0;
+	assert(str);
+	while(*str)//遍历字符串，用计数器计数
+	{
+		count++;
+		str++;
+	}
+	return count;
+}
+int my_strlen(const char *str)//递归
+{
+	if(*str=='\0')
+		return 0;
+	else
+		return 1+my_strlen(str+1);
+}
+int my_strlen(const char *str)//指针运算（指针-指针）
+{
+	const char *start = str;
+	while(*str)
+	{
+		str++;//找到字符串的最后一位元素
+	}
+	return str-start;//尾指针-首指针
+}
+int main()
+{
+	char str[] = {"abcdefghijk"};
+	int ret = my_strlen(str);
+	printf("%d\n",ret);
+	system("pause");
+	return 0;
+}
+2.模拟实现strstr函数
+char * my_strstr(  char *str1,char *str2)
+{
+	while(*str2)
+	{
+		char* s1=str1;
+		char* s2=str2;
+		char *s=str1;
+		while(*s1==*s2)//str1中第一个和str2第一个字符相同
+		{
+			s1++;
+			s2++;
+			if(*s2=='\0')//如果str2已遍历完，则跳出
+				return s;
+		}
+		str1++;//两个字符串没有遇到相等的字符，指针继续指向str1的下一个字符
+	}
+	return NULL ;
+}
+int main()
+{
+	char *str1="we are happy";
+	char *str2="are";
+	char* ret = 0;
+	ret=my_strstr(str1,str2);
+	printf("%s",ret);
+	system("pause");
+	return 0;
+}
+3.模拟实现strcpy函数
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+char* my_strcpy(char *str1,const char *str2)
+{
+	char *ret=str1;
+	assert(str1 != NULL);//断言
+	assert(str2 != NULL);//断言
+	while(*str1++=*str2++)//将字符串str2的每一个字符都复制给str1,直到str2结束‘\0’
+	{
+		;
+	}
+	return ret;//返回复制后的字符串
+}
+int main()
+{
+	char str[20]="abcde";
+	my_strcpy(str,"dcba");
+	printf("%s\n",str);
+	system("pause");
+	return 0;
+}
+4.模拟实现strncpy函数
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+char *my_strncpy(char *str1,const char *str2,int count)
+{
+	char *ret = str1;
+	assert(str1);
+	assert(str2);
+	while(count&&*str2)//和strcpy道理相同，但被复制的字符受长度count限制
+	{
+		*str1++=*str2++;
+		count--;
+	}
+	if(count!=0)
+	{
+		while(count)//若count大于str2的长度，则将其后的全赋值为0
+		{
+			*str1++='\0';
+			count--;
+		}
+	}
+	return ret;
+}
+int main()
+{
+	char str[]="abcdef";
+	my_strncpy(str,"edcba",8);
+	printf("%s",str);
+	system("pause");
+	return 0;
+}
+5.模拟实现strcat函数
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+char* my_strcat(char *str1,const char *str2)
+{
+	char *ret=str1;
+	assert(str1 != NULL);
+	assert(str2 != NULL);
+	while(*str1)//找到第一个字符串的最后一个元素
+	{
+		str1++;
+	}
+	while(*str1++=*str2++)//从第一个字符串的最后一个元素的下一个位置起（即第一个字符串的‘\0’），
+					  //将第二个字符串的每一个元素复制过去
+	{
+		;
+	}
+	return ret;
+}
+int main()
+{
+	char str[20]="abcde";
+	my_strcat(str,"dcba");
+	printf("%s\n",str);
+	system("pause");
+	return 0;
+}
+6.模拟实现strncat函数//原理与strcat相同，只不过被连接的字符串长度受限制count 
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+char *my_strncat(char *str1,const char *str2,int count)
+{
+	
+	char *ret=str1;
+	assert(str1 != NULL);
+	assert(str2 != NULL);
+	while(*str1)
+	{
+		str1++;
+	}
+	while(count&&(*str1++=*str2++))
+	{
+		 count--;
+	}
+	return ret;
+}
+int main()
+{
+	char str[20]="abcde";
+	my_strncat(str,"dcba",6);
+	printf("%s\n",str);
+	system("pause");
+	return 0;
+}
+7.模拟实现strcmp函数
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+int my_strcmp(const char *str1,const char *str2)
+{
+	assert(str1);
+	assert(str2);
+	while(*str1==*str2)//r若两个字符串的第一个字符相等，进入循环
+	{
+		if(*str1=='\0')
+		{
+			return 0;//字符串相等，返回0
+		}
+		str1++;//若不为空，则继续比较下一个字符
+		str2++;
+	}
+	//若遇到不相等的字符，跳出循环，返回二者之差，若str1>str2,返回值为正数，否则为负数				
+	return *str1-*str2;
+}
+int main()
+{
+	char str1[] = "abcdefg";
+	char str2[] = "abc";
+	int ret = my_strcmp(str1,str2);
+	printf("%d",ret);
+	system("pause");
+	return 0;
+}
+8.模拟实现strncmp函数//原理与strcmp函数相同
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+int my_strncmp(const char *str1,const char *str2,int count)
+{
+	assert(str1);
+	assert(str2);
+	while(--count&&*str1==*str2)//用count的大小来控制比较的次数
+	{
+		if(*str1=='\0')
+		{
+			return 0;
+		}
+		str1++;
+		str2++;		
+	}
+
+
+	return *str1-*str2;
+}
+int main()
+{
+	char str1[] = "abcdefg";
+	char str2[] = "abcd";
+	int ret =my_strncmp(str1,str2,4);
+	printf("%d",ret);
+	system("pause");
+	return 0;
+}
+9.模拟实现memcpy函数
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+void *my_memcpy(void *dest,const void *src,int count)
+{
+	void *ret=dest;
+	assert(dest);
+	assert(src);
+	while(count--)
+	{
+		*(char *)dest	= *(char *)src;
+		dest = (char *)dest+1;
+		src = (char *)src+1;
+	}
+	return ret;
+}
+int main()
+{
+	char str1[] = "abcdefgh";
+	char str2[] = "ghikg***0jkll";
+	my_memcpy(str1,str2,sizeof(str2));
+	printf("%s\n",str1);
+	system("pause");
+	return 0;
+}
