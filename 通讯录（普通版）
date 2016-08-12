@@ -1,0 +1,242 @@
+实现一个通讯录；
+通讯录可以用来存储1000个人的信息，每个人的信息包括：
+姓名、性别、年龄、电话、住址
+
+提供方法：
+1.	添加联系人信息
+2.	删除指定联系人信息
+3.	查找指定联系人信息
+4.	修改指定联系人信息
+5.	显示所有联系人信息
+6.	清空所有联系人
+7.	以名字排序所有联系人
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+typedef struct ATNN
+{
+	char name[20];
+	char sex[4];
+	char age[3];
+	char tel[12];
+	char addr[50];
+} Attn;
+void menu()
+{
+	printf("\n******************************************************\n");
+	printf("\n************************通讯录************************\n");
+	printf("\n*****1.添加联系人信息        2.清空所有联系人*********\n");
+	printf("\n*****3.查找指定联系人信息  4.修改指定联系人信息*******\n");
+	printf("\n*****5.显示所有联系人信息  6.删除指定联系人信息*******\n");
+	printf("\n*****7.以名字排序所有联系人0.退出*********************\n");
+	printf("\n******************************************************\n");
+}
+void print_attn(Attn *at,int sz)
+{
+	int i = 0;
+	printf("姓名    性别   年龄         电话        地址       \n");
+	for(i=0;i<sz;i++)
+	{
+		if(strcmp(at[i].name,"")==0)
+			break;
+		printf("%s\t %s\t%s\t%s\t%s\n",at[i].name,at[i].sex, at[i].age,at[i].tel,at[i].addr);
+	}
+}
+void	add_attn(Attn *at,int sz)
+{
+	int i = 0;
+	Attn*a = NULL;
+	for(i=0;i<sz;i++)
+	{	
+		a = at+i;
+		if(strcmp(at[i].name,"")==0)
+		{
+			printf("请输入要添加的信息（姓名 性别 年龄 电话 地址 ）：\n");
+			scanf("%s%s%s%s%s",a->name,a->sex,a->age,a->tel,a->addr);
+			strcpy(at[i].name,a->name);
+			strcpy(at[i].sex,a->sex);
+			strcpy(at[i].age,a->age);
+			strcpy(at[i].tel,a->tel);
+			strcpy(at[i].addr,a->addr);
+			printf("添加成功！");
+			break;
+		}
+	}
+	if ((strcmp(at[i].name, "") != 0) && (i == sz))
+	{
+		printf("通讯录已满\n");
+	}
+}
+void delete_attn(Attn at[],int sz)
+{
+	int i = 0;
+	int tmp=0;
+	char dele_name[20]="";
+	printf("删除指定联系人：");
+	scanf("%s",dele_name);
+	for(i=0;i<sz;i++)
+	{	
+		if(strcmp(at[i].name,dele_name)==0)
+		{
+			while(i<sz)
+			{
+				strcpy(at[i].name,at[i+1].name);
+				strcpy(at[i].sex,at[i+1].sex);
+				strcpy(at[i].age,at[i+1].age);
+				strcpy(at[i].tel,at[i+1].tel);
+				strcpy(at[i].addr,at[i+1].addr);
+				i++;
+			}
+			tmp=1;
+			break;		
+		}
+		else tmp=0;		
+	}
+	if(tmp==0)
+		printf("输入有误！\n");
+}
+void Find_attn(Attn *at,int sz)
+{
+	int i = 0;
+	int tmp=0;
+	char dele_name[20]="";
+	printf("查找指定联系人：");
+	scanf("%s",dele_name);
+	for(i=0;i<sz;i++)
+	{		
+		if(strcmp(at[i].name,dele_name)==0)
+		{
+			printf("%s\t %s\t%s\t%s\t%s\n",at[i].name,at[i].sex, at[i].age,at[i].tel,at[i].addr);
+			printf("查找成功！");	
+			tmp=1;
+			break;
+		}	
+		else tmp=0;
+	}	
+	if(tmp==0)
+	{
+		printf("查无此人！");		
+	}
+}
+void alter_attn(Attn *at,int sz)
+{
+	int i = 0;
+	Attn *a = NULL;
+	char alter[100]="";
+	int input =1;
+	int tmp=0;
+	printf("请输入要修改的联系人");
+	scanf("%s",alter);
+	for(i=0;i<sz;i++)
+	{
+		a = at+i;
+		if(strcmp(at[i].name,alter)==0)
+		{
+			printf("请输入要修改的信息（0.退出1.姓名2. 性别3. 年龄 4.电话 5.地址 ）：\n");
+			while(input)
+			{			
+				scanf("%d",&input);
+				switch(input)
+				{
+				case 0: break;
+				case 1:printf("请输入修改后的姓名：");
+					scanf("%s",a->name);
+					strcpy(at[i].name,a->name);
+					break;
+				case 2:printf("请输入修改后的性别：");
+					scanf("%s",a->sex);
+					strcpy(at[i].sex,a->sex);
+					break;
+				case 3:printf("请输入修改后的年龄：");
+					scanf("%s",a->age);
+					break;
+					strcpy(at[i].age,a->age);
+				case 4:printf("请输入修改后的电话：");
+					scanf("%s",a->tel);
+					strcpy(at[i].tel,a->tel);
+					break;
+				case 5:printf("请输入修改后的地址：");
+					scanf("%s",a->addr);
+					strcpy(at[i].addr,a->addr);
+					break;
+				default:break;
+				}
+				
+			}
+			tmp=1;
+			break;
+		}
+		else
+			tmp=0;	
+	}
+	if(tmp==0)
+	{
+		printf("输入有误，修改失败！\n");			
+	}
+}
+void	empty_attn(Attn *at,int sz)
+{
+	int i = 0;
+	for(i=0;i<sz;i++)
+	{
+		strcpy(at[i].name,"");
+		strcpy(at[i].sex,"");
+		strcpy(at[i].age,"");
+		strcpy(at[i].tel,"");
+		strcpy(at[i].addr,"");	
+	}
+	printf("通讯录已清空！\n");
+}
+void	order_attn(Attn *at,int sz)
+{
+	int i = 0;
+	for(i=0;i<sz;i++)
+	{
+		if(strcmp(at[i].name,at[i+1].name)>0)
+		{
+			struct ATNN temp = at[i];
+			at[i]=at[i+1];
+			at[i+1]=temp;
+		}
+	}
+}
+int main()
+{
+	Attn at[1000]={{"刘金花","女","18","15029237168","月球"},
+	{"郭姗姗","女","18","15029226476","地球"},
+	{"尚锠","女","19","15029223456","火星"},
+	{"江莹莹","女","18","15022248765","水星"},
+	{"张欢","女","18","15029237262","木星"}};
+	int sz=sizeof(at)/sizeof(at[0]);
+	int input = 1;
+	menu();
+	while(input)
+	{	
+		printf("请选择->");
+		scanf("%d",&input);
+		switch(input)
+		{
+		case 0: break;
+		case 1:	add_attn(at,sz);
+			break;
+		case 2: empty_attn(at,sz);				
+			break;
+		case 3: Find_attn(at,sz);
+			break;
+		case 4: alter_attn(at,sz);
+			break;
+		case 5: print_attn(at,sz);
+			break;
+		case 6: delete_attn(at,sz);				
+			break;
+		case 7: 	order_attn(at,sz);
+			print_attn(at,sz);
+			break;
+		default:
+			printf("输入有误\n");
+			break;
+		}
+	}
+	system("pause");
+	return 0;
+}
