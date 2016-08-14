@@ -1,0 +1,250 @@
+CommentConvert.h内容
+#ifndef __COMMENT_CONVERT_H__  
+#define __COMMENT_CONVERT_H__   
+#include<stdio.h>  
+#include<stdlib.h>   
+enum STATE//枚举操作选项  
+{  
+NULL_STATE,  //普通语句
+C_STATE,  //C 模式
+CPP_STATE,  //cpp 模式
+END_STATE  
+};  
+void CommentConvert();  
+void DoConvertWork(FILE *pfIn,FILE *pfOut,enum STATE *psta);//注释转换操作  
+void DoCState(FILE *pfIn,FILE *pfOut,enum STATE *psta);//C 模式转换为 cpp模式  
+void DoNullState(FILE *pfIn,FILE *pfOut,enum STATE *psta);//普通语句转换模式 
+void DoCppState(FILE *pfIn,FILE *pfOut,enum STATE *psta);//cpp 模式转换 C 模式  
+#endif //__COMMENT_CONVERT_H__  
+
+
+CommentConvert.c内容
+#define _CRT_SECURE_NO_WARNINGS 1  
+#include"CommentConvert.h"  
+void DoNullState(FILE *pfIn,FILE *pfOut,enum STATE *psta) 
+{  
+int first = fgetc(pfIn);  
+int second;  
+switch(first)  
+{  
+case'/':  
+second = fgetc(pfIn);  
+if(second == '*')  
+{  
+fputc(first,pfOut);  
+fputc('/',pfOut);  
+*psta = C_STATE ;//如果是“/*”则将状态改为C状态，并且将注释开头改为Cpp注释 (//) 
+}  
+else if(second == '/')  
+{  
+fputc(first,pfOut);  
+fputc(second,pfOut);  
+*psta = CPP_STATE ; //如果是"//"则将状态改为Cpp状态  
+}  
+else //普通语句就直接写入；  
+{  
+fputc(first,pfOut);  
+fputc(second,pfOut);  
+}   
+break;  
+case EOF:  
+fputc(first,pfOut);  
+*psta = END_STATE ;  
+break;  
+default://普通内容，直接写入  
+fputc(first,pfOut);  
+break;  
+}  
+}    
+void DoCState(FILE *pfIn,FILE *pfOut,enum STATE *psta)//C模式转换为Cpp模式 
+{  
+int first = fgetc(pfIn);  
+int second = 0;  
+switch(first)  
+{  
+case '*':  
+second = fgetc(pfIn);  
+if(second == '/')//不做任何操作  
+{  
+int third = fgetc(pfIn);  
+*psta = NULL_STATE ;  
+if(third != '\n')  
+{  
+fputc('\n',pfOut);  
+ungetc(third,pfIn);//已读数据还回缓冲区；  
+}  
+if(third == '\n')  
+{  
+fputc(third,pfOut);  
+}  
+}  
+else  
+{  
+fputc(first,pfOut);  
+ungetc(second,pfIn);//将second内容还回缓冲区  
+}  
+break;  
+case '\n'://如果是换行，那就是连续注释，就将下一行开头加入Cpp注释（//） 
+fputc(first,pfOut);  
+fputc('/',pfOut);  
+fputc('/',pfOut);  
+break;  
+case EOF:  
+fputc(first,pfOut);  
+*psta = END_STATE ;  
+break;  
+default:  
+fputc(first,pfOut);  
+break;  
+}  
+}     
+void DoCppstatete(FILE *pfIn,FILE *pfOut,enum STATE *psta)//Cpp模式转换为C模式  
+{  
+int first = 0;  
+first = fgetc(pfIn);  
+switch(first)  
+{  
+case'\n'://Cpp注释的换行结束一行注释  
+fputc(first,pfOut);  
+*psta = NULL_STATE ;  
+break;  
+case EOF:  
+fputc(first,pfOut);  
+*psta = END_STATE ;  
+break;  
+default :  
+fputc(first,pfOut);  
+break;  
+}  
+}  
+void DoConvertWork(FILE *pfIn,FILE *pfOut)//函数操作选项
+{  
+enum STATE state = NULL_STATE ;//开始选择无状态  
+while(state != END_STATE )  
+{  
+switch(state)  
+{  
+case NULL_STATE :  
+DoNullState(pfIn,pfOut,&state);  
+break;  
+case C_STATE  :  
+DoCState(pfIn,pfOut,&state);  
+break;  
+case CPP_STATE  :  
+DoCppstatete(pfIn,pfOut,&state);  
+break;  
+default:  
+break;  
+}  
+}  
+}   
+void CommentConvert()//读写文件函数；  
+{  
+FILE *pfOut= NULL;  
+FILE *pfIn = fopen("input.c","r");      //打开"input.c"文件; 
+if(pfIn == NULL)  
+{  
+perror("open file for pfIn");  
+exit(1 );  
+}  
+pfOut= fopen("output.c", "w");  //写入新创建的"output.c"文件; 
+if(pfOut== NULL)  
+{  
+fclose(pfIn );  
+perror ("open file for pfOut");  
+exit(EXIT_FAILURE );  
+}  
+DoConvertWork(pfIn,pfOut);  
+fclose(pfIn );  //关闭已经打开的文件;  
+fclose (pfOut);  
+}  
+
+
+test.c内容
+#include"CommentConvert.h"  
+int main()  
+{  
+CommentConvert();  
+printf("转换成功\n");
+system("pause");  
+return 0;  
+}  
+
+
+input.c内容
+
+
+// 1.一般情况
+/* int i = 0; */
+
+
+// 2.换行问题
+/* int i = 0; */int j = 0;
+/* int i = 0; */
+int j = 0;
+// 3.匹配问题
+/*int i = 0;/*xxxxx*/
+
+
+// 4.多行注释问题
+/*
+int i=0;
+int j = 0;
+int k = 0;
+*/int k = 0;
+
+
+// 5.连续注释问题
+/**//**/
+
+
+// 6.连续的**/问题
+/***/
+
+
+// 7.C++注释问题
+// /*xxxxxxxxxxxx*/
+
+output.c内容（最终运行结果）
+
+
+
+// 1.一般情况
+// int i = 0; 
+
+
+// 2.换行问题
+// int i = 0; 
+int j = 0;
+// int i = 0; 
+int j = 0;
+// 3.匹配问题
+//int i = 0;/*xxxxx
+
+
+// 4.多行注释问题
+//
+//int i=0;
+//int j = 0;
+//int k = 0;
+//
+int k = 0;
+
+
+// 5.连续注释问题
+//
+//
+
+
+// 6.连续的**/问题
+//*
+
+
+// 7.C++注释问题
+// /*xxxxxxxxxxxx*/
+
+
+
+
+
+
